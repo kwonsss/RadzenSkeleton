@@ -21,9 +21,9 @@
                                 <RadzenDataGridColumn TItem="ValueModel" Property="Value" Title="Id" IsInEditMode="@IsCellEditing" >
                                     <EditTemplate Context="context">
                                         <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
-                                                <RadzenTextBox @bind-Value="context.Value" Style="width:calc(100% - 160px)"/>
-                                                <RadzenButton Click=@(() => CellEditApply(context)) Text="Apply" Style="width:80px; padding:8px; text-transform: lowercase;"/>
-                                                <RadzenButton Click=@(() => CellEditCancel(context)) Text="Cancel" Style="width:80px; padding:8px; text-transform: lowercase;"/>
+@*                                              <RadzenTextBox @bind-Value="context.Value" Style="width:calc(100% - 160px)"/> *@
+                                            <RadzenButton Click=@(() => CellEditApply(context)) Text="Apply" Style="width:80px; padding:4px; min-height:24px;  text-transform: lowercase;" />
+                                            <RadzenButton Click=@(() => CellEditCancel(context)) Text="Cancel" Style="width:80px; height:8px; text-transform: lowercase;" />
                                         </RadzenStack>
                                     </EditTemplate>
                                 </RadzenDataGridColumn>

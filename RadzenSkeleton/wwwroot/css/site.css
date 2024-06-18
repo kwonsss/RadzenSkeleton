@@ -19,6 +19,8 @@
 
 :root {
     font-size: var(--rz-root-font-size);
+    --rz-grid-header-cell-padding: 0.2rem 0;
+    --rz-grid-cell-padding: 0.2rem
 }
 
 body {
