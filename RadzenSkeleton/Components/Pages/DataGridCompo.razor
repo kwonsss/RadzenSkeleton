@@ -1,0 +1,136 @@
+﻿@page "/datagridcompo"
+
+@using RadzenSkeleton.Components.Models
+@using System.Diagnostics
+
+<PageTitle>DataGridCompo</PageTitle>
+
+<RadzenTabs RenderMode="TabRenderMode.Client">
+    <Tabs>
+        
+        <!-- TRAYS TAB -->
+        <RadzenTabsItem Text="Trays">
+            <RadzenRow Gap="1rem">
+                <RadzenSplitter Orientation="Orientation.Horizontal">
+                    <RadzenSplitterPane Size="60%">
+                        <RadzenText><strong>Vial</strong></RadzenText>
+                        <RadzenDataGrid @ref="GridVial" Data="@VialTrays" TItem="ValueModel" GridLines="DataGridGridLines.Both" SelectionMode="DataGridSelectionMode.Single" AllowColumnResize="true" 
+                                    CellClick="@OnVialCellClick" >
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ValueModel" Property="No" Title="No" Width="60px"/>
+                                <RadzenDataGridColumn TItem="ValueModel" Property="Value" Title="Id" IsInEditMode="@IsCellEditing" >
+                                    <EditTemplate Context="context">
+                                        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+                                                <RadzenTextBox @bind-Value="context.Value" Style="width:calc(100% - 160px)"/>
+                                                <RadzenButton Click=@(() => CellEditApply(context)) Text="Apply" Style="width:80px; padding:8px; text-transform: lowercase;"/>
+                                                <RadzenButton Click=@(() => CellEditCancel(context)) Text="Cancel" Style="width:80px; padding:8px; text-transform: lowercase;"/>
+                                        </RadzenStack>
+                                    </EditTemplate>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenSplitterPane>
+
+                    <RadzenSplitterPane Size="40%">
+                        <RadzenText><strong>Name</strong></RadzenText>
+                        <RadzenDataGrid @ref="GridCoupon" Data="@CouponTrays" TItem="ValueModel" GridLines="DataGridGridLines.Both" SelectionMode="DataGridSelectionMode.Single" AllowColumnResize="true" 
+                                    CellClick="@OnVialCellClick" >
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ValueModel" Property="No" Title="No" Width="60px"/>
+                                <RadzenDataGridColumn TItem="ValueModel" Property="Value" Title="Id" IsInEditMode="@IsCellEditing" >
+                                    <EditTemplate Context="context">
+                                        <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
+                                                <RadzenTextBox @bind-Value="context.Value" Style="width:calc(100% - 60px)"/>
+                                                <RadzenButton Click=@(() => CellEditApply(context)) Text="Apply"
+                                                     Style="padding:8px; text-transform: lowercase;"/>
+                                        </RadzenStack>
+                                    </EditTemplate>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenSplitterPane>
+                </RadzenSplitter>
+            </RadzenRow>
+        </RadzenTabsItem>
+
+    </Tabs>
+</RadzenTabs>
+
+@code {
+
+    private RadzenDataGrid<ValueModel> GridCoupon;
+    private RadzenDataGrid<ValueModel> GridVial;
+
+
+    public class EditItem
+    {
+        public string       Column;
+        public ValueModel   Backup;
+        public ValueModel   Model;
+        public bool         IsDone;
+        public bool         IsCancel;
+
+        public EditItem(string name, ValueModel model)
+        {
+            Column = name;
+            Model = model;
+            Backup = model.Clone();
+        }
+        public void Done()
+        {
+            if (IsCancel) {
+                Model.Copy(Backup);
+            }
+        }
+    }
+
+    private EditItem CurrentItem;
+
+    private void OnVialCellClick(DataGridCellMouseEventArgs<ValueModel> args)
+    {
+        Debug.WriteLine("OnVialCellClick");
+
+        // 수정 완료
+        if (CurrentItem != null) {
+            if (CurrentItem.IsDone) {
+                CurrentItem.Done();
+                CurrentItem = null;
+            }
+            return;
+        }
+
+        // 수정 시작
+        CurrentItem = new EditItem(args.Column.Property, args.Data);
+
+    }
+    private bool IsCellEditing(string columnName, ValueModel model)
+    {
+        if (CurrentItem != null) {
+            return CurrentItem.Column == columnName && (CurrentItem.Model == model);
+        }
+        return false;
+    }
+    private void InputKeyPressed(KeyboardEventArgs args)
+    {
+        Debug.WriteLine("InputKeyPressed");
+        if (args.Key == "Enter") {
+        }
+    }
+    private void CellEditApply(ValueModel item)
+    {
+        Debug.WriteLine("CellEditApply");
+
+        if (CurrentItem != null) {
+            CurrentItem.IsDone = true;
+        }
+    }
+    private void CellEditCancel(ValueModel item)
+    {
+        Debug.WriteLine("CellEditCancel");
+
+        if (CurrentItem != null) {
+            CurrentItem.IsCancel = true;
+            CurrentItem.IsDone = true;
+        }
+    }
+}
